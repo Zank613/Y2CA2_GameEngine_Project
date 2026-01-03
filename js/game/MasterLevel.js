@@ -1,4 +1,6 @@
 ﻿import Game from "../engine/game.js";
+import GameObject from "../engine/gameobject.js";
+import Renderer from "../engine/renderer.js";
 import MainMenu from "./MainMenu.js";
 import HouseLevel from "./HouseLevel.js";
 import EvacuationLevel from "./EvacuationLevel.js";
@@ -8,6 +10,9 @@ class MasterLevel extends Game {
     constructor(canvasId) {
         super(canvasId);
 
+        this.cameraAnchor = new GameObject(0, 0);
+        this.cameraAnchor.addComponent(new Renderer('rgba(0,0,0,0)', 1, 1)); // Invisible 1x1 pixel
+
         // Track which level logic is currently active
         this.activeLevelController = null;
 
@@ -16,17 +21,17 @@ class MasterLevel extends Game {
     }
 
     /**
-     * Wipes the slate clean. Removes all objects, physics, and UI.
-     * Resets the camera to default 0,0 position.
+     * Wipes the slate clean. Removes all objects.
      */
     clearScene() {
         this.gameObjects = [];
         this.gameObjectsToRemove = [];
 
-        // Reset Camera properties
+        this.camera.target = this.cameraAnchor;
+
+        // Reset Camera Position
         this.camera.x = 0;
         this.camera.y = 0;
-        this.camera.target = null;
 
         if (this.activeLevelController && this.activeLevelController.cleanup) {
             this.activeLevelController.cleanup();
@@ -49,7 +54,6 @@ class MasterLevel extends Game {
     loadGame1() {
         this.clearScene();
         console.log("Loading Game 1: Safe House");
-        // Instantiate the controller for Game 1.
         this.activeLevelController = new HouseLevel(this);
     }
 
@@ -73,7 +77,7 @@ class MasterLevel extends Game {
 
     // Override the update loop to allow the specific level controller
     update() {
-        super.update();
+        super.update(); // Run the standard engine update
 
         if (this.activeLevelController && this.activeLevelController.update) {
             this.activeLevelController.update(this.deltaTime);

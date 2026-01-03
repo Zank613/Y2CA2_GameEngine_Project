@@ -9,7 +9,7 @@ class MainMenu extends GameObject {
 
         // Title Text
         const titleOffset = 150;
-        this.title = new UI("Earthquake Safety Helper", -100, -titleOffset, "40px Arial", "white");
+        this.title = new UI("Earthquake Safety Helper", x, y - titleOffset, "40px Arial", "white", "center");
         this.addComponent(this.title);
     }
 
@@ -22,8 +22,8 @@ class MainMenu extends GameObject {
     }
 
     createMenuButtons() {
-        const startX = this.x - 100;
-        const startY = this.y - 50;
+        const startX = -100;
+        const startY = -50;
         const spacing = 70;
 
         // Button 1: Safe House

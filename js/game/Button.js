@@ -17,8 +17,7 @@ class Button extends GameObject {
         this.addComponent(this.renderer);
 
         // Visuals: Text Label
-        // We offset the text slightly to center it within the button box.
-        this.uiComponent = new UI(this.text, 10, height / 4, "20px Arial", "white");
+        this.uiComponent = new UI(this.text, 0, 0, "20px Arial", "white", "center", "middle");
         this.addComponent(this.uiComponent);
 
         // Input Handling: Mouse Click Listener
@@ -30,18 +29,27 @@ class Button extends GameObject {
         window.addEventListener('mousemove', this.handleMove);
     }
 
+    update(deltaTime) {
+        const camera = this.game.camera;
+        this.uiComponent.x = (this.x - camera.x) + (this.width / 2);
+        this.uiComponent.y = (this.y - camera.y) + (this.height / 2);
+
+        super.update(deltaTime);
+    }
+
     checkClick(event) {
-        // We need the canvas position to get accurate mouse coordinates
         const canvas = document.getElementById('gameCanvas');
         if (!canvas) return;
-
         const rect = canvas.getBoundingClientRect();
         const mouseX = event.clientX - rect.left;
         const mouseY = event.clientY - rect.top;
 
-        // Simple collision detection between Mouse and Button
-        if (mouseX >= this.x && mouseX <= this.x + this.width &&
-            mouseY >= this.y && mouseY <= this.y + this.height) {
+        const camera = this.game.camera;
+        const screenX = this.x - camera.x;
+        const screenY = this.y - camera.y;
+
+        if (mouseX >= screenX && mouseX <= screenX + this.width &&
+            mouseY >= screenY && mouseY <= screenY + this.height) {
 
             if (this.onClick) {
                 this.onClick();
@@ -52,13 +60,16 @@ class Button extends GameObject {
     checkHover(event) {
         const canvas = document.getElementById('gameCanvas');
         if (!canvas) return;
-
         const rect = canvas.getBoundingClientRect();
         const mouseX = event.clientX - rect.left;
         const mouseY = event.clientY - rect.top;
 
-        if (mouseX >= this.x && mouseX <= this.x + this.width &&
-            mouseY >= this.y && mouseY <= this.y + this.height) {
+        const camera = this.game.camera;
+        const screenX = this.x - camera.x;
+        const screenY = this.y - camera.y;
+
+        if (mouseX >= screenX && mouseX <= screenX + this.width &&
+            mouseY >= screenY && mouseY <= screenY + this.height) {
             this.renderer.color = 'darkgray'; // Hover effect
         } else {
             this.renderer.color = 'gray'; // Normal state
