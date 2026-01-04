@@ -7,7 +7,6 @@ class MainMenu extends GameObject {
         super(x, y);
         this.hasSpawnedButtons = false;
 
-        // Title Text
         const titleOffset = 150;
         this.title = new UI("Earthquake Safety Helper", x, y - titleOffset, "40px Arial", "white", "center");
         this.addComponent(this.title);
@@ -26,23 +25,17 @@ class MainMenu extends GameObject {
         const startY = -50;
         const spacing = 70;
 
-        // Button 1: Safe House
+        // 1. Safe Spots
         const btn1 = new Button(startX, startY, 200, 50, "1. Safe Spots", () => {
             this.game.loadGame1();
         });
         this.game.addGameObject(btn1);
 
-        // Button 2: Evacuation Line
-        const btn2 = new Button(startX, startY + spacing, 200, 50, "2. Evacuation", () => {
-            this.game.loadGame2();
-        });
-        this.game.addGameObject(btn2);
-
-        // Button 3: Drop & Cover
-        const btn3 = new Button(startX, startY + (spacing * 2), 200, 50, "3. Drop & Cover", () => {
+        // 2. Drop & Cover
+        const btn2 = new Button(startX, startY + spacing, 200, 50, "2. Drop & Cover", () => {
             this.game.loadGame3();
         });
-        this.game.addGameObject(btn3);
+        this.game.addGameObject(btn2);
     }
 }
 

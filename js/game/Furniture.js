@@ -12,6 +12,9 @@ class FurnitureRenderer extends Component {
         this.height = height;
         this.color = color;
         this.name = name;
+
+        // Used to generate random colours for books and paintings once per object
+        this.randomSeed = Math.random();
     }
 
     draw(ctx) {
@@ -22,7 +25,82 @@ class FurnitureRenderer extends Component {
 
         ctx.save();
 
-        if (this.name === "Door") {
+
+        if (this.name === "Lamp") {
+            // --- CEILING LAMP ---
+            ctx.translate(x + w/2, y);
+
+            // Check earthquake status via the Level Controller
+            let rotation = 0;
+            const level = this.gameObject.game.activeLevelController;
+
+            if (level && level.isEarthquakeMode) {
+                // Swing back and forth quickly
+                const time = performance.now() / 100;
+                rotation = Math.sin(time) * 0.5;
+            }
+
+            ctx.rotate(rotation);
+
+            // Draw Wire
+            ctx.strokeStyle = "#424242";
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(0, 0);
+            ctx.lineTo(0, 40); // Wire length
+            ctx.stroke();
+
+            // Draw Shade
+            ctx.fillStyle = this.color;
+            ctx.beginPath();
+            ctx.moveTo(-15, 40);
+            ctx.lineTo(15, 40);
+            ctx.lineTo(25, 70);
+            ctx.lineTo(-25, 70);
+            ctx.closePath();
+            ctx.fill();
+
+            // Bulb Glow
+            ctx.fillStyle = "rgba(255, 255, 0, 0.3)";
+            ctx.beginPath();
+            ctx.arc(0, 75, 10, 0, Math.PI*2);
+            ctx.fill();
+
+        }
+        else if (this.name === "Painting") {
+            // --- PAINTING ---
+            ctx.fillStyle = "#5D4037"; // Frame
+            ctx.fillRect(x, y, w, h);
+
+            // Canvas area
+            ctx.fillStyle = "#FFF";
+            ctx.fillRect(x+5, y+5, w-10, h-10);
+
+            // Random Abstract Art
+            const artColor = this.randomSeed > 0.5 ? "orange" : "cornflowerblue";
+            ctx.fillStyle = artColor;
+            ctx.beginPath();
+            ctx.arc(x + w/2, y + h/2, 10, 0, Math.PI*2);
+            ctx.fill();
+            ctx.fillStyle = this.randomSeed > 0.3 ? "red" : "green";
+            ctx.fillRect(x+10, y+h-20, 20, 10);
+        }
+        else if (this.name === "Chair") {
+            // --- CHAIR ---
+            ctx.fillStyle = "#8D6E63"; // Wood
+
+            // Legs
+            ctx.fillRect(x + 5, y + h/2, 5, h/2); // Front leg
+            ctx.fillRect(x + w - 10, y + h/2, 5, h/2); // Back leg
+
+            // Seat
+            ctx.fillRect(x, y + h/2, w, 10);
+
+            // Backrest
+            ctx.fillRect(x + w - 10, y, 10, h/2 + 10);
+            ctx.fillRect(x + w - 30, y + 10, 20, 5);
+        }
+        else if (this.name === "Door") {
             // --- DOOR LOGIC ---
             // If closed: Draw solid door
             // If open: Draw door frame "hollow"
@@ -155,12 +233,35 @@ class FurnitureRenderer extends Component {
         else if (this.name === "Bookshelf") {
             ctx.fillStyle = "#5D4037"; ctx.fillRect(x, y, w, h);
             ctx.fillStyle = "#3E2723";
-            const shelves = 3; const shelfGap = h / shelves;
-            for(let i=1; i<shelves; i++) {
-                ctx.fillRect(x, y + (i*shelfGap), w, 5);
-                ctx.fillStyle = "red"; ctx.fillRect(x + 10, y + (i*shelfGap) - 20, 10, 20);
-                ctx.fillStyle = "blue"; ctx.fillRect(x + 22, y + (i*shelfGap) - 25, 10, 25);
+
+            const shelves = 4;
+            const shelfGap = h / shelves;
+
+            // Draw shelves and books
+            for(let i=0; i<shelves; i++) {
+                const shelfY = y + (i*shelfGap);
+                // Shelf plank
                 ctx.fillStyle = "#3E2723";
+                ctx.fillRect(x, shelfY + shelfGap - 5, w, 5);
+
+                // Random Books on this shelf
+                let currentBookX = x + 5;
+                let bookSeed = (this.gameObject.x + i * 13) % 100;
+
+                while(currentBookX < x + w - 15) {
+                    const bookW = 5 + (bookSeed % 10); // Random width 5-15
+                    const bookH = 15 + (bookSeed % 15); // Random height
+                    const colors = ["#C62828", "#1565C0", "#2E7D32", "#F9A825", "#6A1B9A"];
+                    const color = colors[Math.floor(bookSeed % colors.length)];
+
+                    ctx.fillStyle = color;
+                    ctx.fillRect(currentBookX, shelfY + shelfGap - 5 - bookH, bookW, bookH);
+
+                    currentBookX += bookW + 1; // 1px gap
+                    bookSeed = (bookSeed * 7 + 3) % 100;
+
+                    if(bookSeed < 20) currentBookX += 10; // Random gap between books
+                }
             }
         }
         else {

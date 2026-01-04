@@ -11,25 +11,22 @@ class MasterLevel extends Game {
         super(canvasId);
 
         this.cameraAnchor = new GameObject(0, 0);
-        this.cameraAnchor.addComponent(new Renderer('rgba(0,0,0,0)', 1, 1)); // Invisible 1x1 pixel
+        this.cameraAnchor.addComponent(new Renderer('rgba(0,0,0,0)', 1, 1));
 
-        // Track which level logic is currently active
         this.activeLevelController = null;
 
-        // Start directly into the Main Menu
         this.loadMainMenu();
     }
 
-    /**
-     * Wipes the slate clean. Removes all objects.
-     */
     clearScene() {
         this.gameObjects = [];
         this.gameObjectsToRemove = [];
 
         this.camera.target = this.cameraAnchor;
-
-        // Reset Camera Position
+        this.camera.confiner = null;
+        if (this.camera.shaking !== undefined) {
+            this.camera.shaking = false;
+        }
         this.camera.x = 0;
         this.camera.y = 0;
 
@@ -39,46 +36,26 @@ class MasterLevel extends Game {
         this.activeLevelController = null;
     }
 
-    /**
-     * Loads the Main Menu Screen.
-     */
     loadMainMenu() {
         this.clearScene();
         const menu = new MainMenu(this.canvas.width / 2, this.canvas.height / 2);
         this.addGameObject(menu);
     }
 
-    /**
-     * Loads Game 1: The Safe House
-     */
     loadGame1() {
         this.clearScene();
-        console.log("Loading Game 1: Safe House");
+        console.log("Loading Game 1");
         this.activeLevelController = new HouseLevel(this);
     }
 
-    /**
-     * Loads Game 2: The Evacuation Line
-     */
-    loadGame2() {
-        this.clearScene();
-        console.log("Loading Game 2: Evacuation Line");
-        this.activeLevelController = new EvacuationLevel(this);
-    }
-
-    /**
-     * Loads Game 3: Quake Rhythm
-     */
     loadGame3() {
         this.clearScene();
-        console.log("Loading Game 3: Quake Rhythm");
+        console.log("Loading Game 3");
         this.activeLevelController = new RhythmLevel(this);
     }
 
-    // Override the update loop to allow the specific level controller
     update() {
-        super.update(); // Run the standard engine update
-
+        super.update();
         if (this.activeLevelController && this.activeLevelController.update) {
             this.activeLevelController.update(this.deltaTime);
         }

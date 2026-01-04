@@ -1,22 +1,55 @@
-// Create an Images object to hold the Image instances for the player and the enemy.
 const Images = {
-  player: new Image(), // The Image instance for the player.
-  enemy: new Image(),
-  collectible: new Image(),
-  backgroud: new Image()// The Image instance for the enemy.
+    playerIdle: [],
+    playerWalk: [],
+    playerProtect: [],
+
+    jesusDescend: new Image(),
+    jesusWin: new Image(),
 };
 
-// Create an AudioFiles object to hold the file paths of the audio resources.
 const AudioFiles = {
-    collect: new Audio('./resources/Audio/pick-up.mp3')
-  
+    holy: new Audio('./resources/Audio/2019-03-30_18-13-20.mp3')
 };
 
-// Set the source of the player image.
-Images.player.src = './resources/images/player/Santa.png'; // Update the image path
-Images.backgroud.src = './resources/images/bg.jpg'
-// Set the source of the enemy image.
-Images.enemy.src = './resources/images/enemy/enemy.png'; // Update the image path
-Images.collectible.src = "./resources/images/collectible/star.png";
-// Export the Images and AudioFiles objects so they can be imported and used in other modules.
-export { Images, AudioFiles };
+// Load Idle (idle_0 to idle_2)
+for (let i = 0; i <= 2; i++) {
+    const img = new Image();
+    img.src = `./resources/images/player/idle_${i}.png`;
+    Images.playerIdle.push(img);
+}
+
+// Load Walk (walk_0 to walk_11)
+for (let i = 0; i <= 11; i++) {
+    const img = new Image();
+    img.src = `./resources/images/player/walk_${i}.png`;
+    Images.playerWalk.push(img);
+}
+
+// Load Protect (protect_0 to protect_3)
+for (let i = 0; i <= 3; i++) {
+    const img = new Image();
+    img.src = `./resources/images/player/protect_${i}.png`;
+    Images.playerProtect.push(img);
+}
+
+// Load Jesus
+Images.jesusDescend.src = "./resources/images/1pix6500.png";
+Images.jesusWin.src = "./resources/images/2pix6500.png";
+
+
+let globalVolume = 1.0; // Default 100%
+
+const setGlobalVolume = (value) => {
+    globalVolume = Math.max(0, Math.min(1, value));
+
+    // Apply to all loaded audio files immediately
+    Object.values(AudioFiles).forEach(audio => {
+        audio.volume = globalVolume;
+    });
+};
+
+const getGlobalVolume = () => {
+    return globalVolume;
+};
+
+export { Images, AudioFiles, setGlobalVolume, getGlobalVolume };
